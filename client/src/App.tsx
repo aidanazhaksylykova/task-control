@@ -1,7 +1,6 @@
 import { Navigate, Route, BrowserRouter, Routes } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 import { Layout } from './components/Layout';
-import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { TaskRegistry } from './pages/TaskRegistry';
 import { TaskDetail } from './pages/TaskDetail';
@@ -9,62 +8,59 @@ import { Analytics } from './pages/Analytics';
 import { Notifications } from './pages/Notifications';
 import { Settings } from './pages/Settings';
 
-function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+function PageLayout({ children }: { children: React.ReactNode }) {
   return <Layout>{children}</Layout>;
 }
 
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
       <Route
         path="/dashboard"
         element={
-          <PrivateRoute>
+          <PageLayout>
             <Dashboard />
-          </PrivateRoute>
+          </PageLayout>
         }
       />
       <Route
         path="/tasks"
         element={
-          <PrivateRoute>
+          <PageLayout>
             <TaskRegistry />
-          </PrivateRoute>
+          </PageLayout>
         }
       />
       <Route
         path="/tasks/:id"
         element={
-          <PrivateRoute>
+          <PageLayout>
             <TaskDetail />
-          </PrivateRoute>
+          </PageLayout>
         }
       />
       <Route
         path="/analytics"
         element={
-          <PrivateRoute>
+          <PageLayout>
             <Analytics />
-          </PrivateRoute>
+          </PageLayout>
         }
       />
       <Route
         path="/notifications"
         element={
-          <PrivateRoute>
+          <PageLayout>
             <Notifications />
-          </PrivateRoute>
+          </PageLayout>
         }
       />
       <Route
         path="/settings"
         element={
-          <PrivateRoute>
+          <PageLayout>
             <Settings />
-          </PrivateRoute>
+          </PageLayout>
         }
       />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />

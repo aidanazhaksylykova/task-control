@@ -1,39 +1,29 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { api } from '../api/client';
 import type { User } from '../types';
 
 interface AuthState {
   user: User | null;
-  token: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  ready: boolean;
 }
 
 const AuthContext = createContext<AuthState | null>(null);
 
+// Проект открыт без входа: сервер сам подставляет учётную запись руководителя
+// по умолчанию для запросов без токена, клиент просто спрашивает, кто это.
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const raw = localStorage.getItem('user');
-    return raw ? JSON.parse(raw) : null;
-  });
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
+  const [user, setUser] = useState<User | null>(null);
+  const [ready, setReady] = useState(false);
 
-  async function login(email: string, password: string) {
-    const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setToken(data.token);
-    setUser(data.user);
-  }
+  useEffect(() => {
+    api
+      .get('/auth/me')
+      .then(({ data }) => setUser(data.user))
+      .catch(() => {})
+      .finally(() => setReady(true));
+  }, []);
 
-  function logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setToken(null);
-    setUser(null);
-  }
-
-  return <AuthContext.Provider value={{ user, token, login, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, ready }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

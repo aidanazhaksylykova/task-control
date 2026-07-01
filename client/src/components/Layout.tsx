@@ -18,7 +18,7 @@ const navItems = [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const location = useLocation();
   const [unread, setUnread] = useState(0);
 
@@ -62,9 +62,6 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="sidebar-user">
           <div>{user.name}</div>
           <div className="role">{roleLabels[user.role]}</div>
-          <button className="logout-btn" onClick={logout}>
-            Выйти
-          </button>
         </div>
       </aside>
       <main className="main">{children}</main>
