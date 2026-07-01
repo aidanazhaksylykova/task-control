@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: task-control-server
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_ORIGIN
+        value: https://aidanazhaksylykova.github.io
+      - key: NODE_VERSION
+        value: 24
