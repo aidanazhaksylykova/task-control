@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { demoProjects, demoRiskTasks } from '../data/demoData';
 import type { Project, Task } from '../types';
 import { HealthBadge } from '../components/Badges';
 import { ProgressBar } from '../components/ProgressBar';
@@ -15,9 +16,15 @@ export function Dashboard() {
   const [running, setRunning] = useState(false);
 
   async function load() {
-    const [{ data: pData }, { data: tData }] = await Promise.all([api.get('/projects'), api.get('/tasks')]);
-    setProjects(pData.projects);
-    setRiskTasks(tData.tasks.filter((t: Task) => t.at_risk && t.status !== 'overdue').slice(0, 8));
+    try {
+      const [{ data: pData }, { data: tData }] = await Promise.all([api.get('/projects'), api.get('/tasks')]);
+      setProjects(pData.projects);
+      setRiskTasks(tData.tasks.filter((t: Task) => t.at_risk && t.status !== 'overdue').slice(0, 8));
+    } catch {
+      // Backend недоступен (например, витрина на GitHub Pages без Render) — показываем статичный демо-снимок.
+      setProjects(demoProjects);
+      setRiskTasks(demoRiskTasks);
+    }
   }
 
   useEffect(() => {
@@ -42,6 +49,8 @@ export function Dashboard() {
     try {
       await api.post('/notifications/run-check');
       await load();
+    } catch {
+      // Backend недоступен в статичном демо-режиме — тихо игнорируем.
     } finally {
       setRunning(false);
     }

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { api } from '../api/client';
+import { demoUser } from '../data/demoData';
 import type { User } from '../types';
 
 interface AuthState {
@@ -19,7 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     api
       .get('/auth/me')
       .then(({ data }) => setUser(data.user))
-      .catch(() => {})
+      .catch(() => setUser(demoUser))
       .finally(() => setReady(true));
   }, []);
 
