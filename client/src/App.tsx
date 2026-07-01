@@ -10,8 +10,7 @@ import { Notifications } from './pages/Notifications';
 import { Settings } from './pages/Settings';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
-  const { user, ready } = useAuth();
-  if (!ready) return <div className="loading">Загрузка…</div>;
+  const { user } = useAuth();
   if (!user) return <Navigate to="/login" replace />;
   return <Layout>{children}</Layout>;
 }
