@@ -1,0 +1,16 @@
+node_modules
+dist
+dist-ssr
+*.local
+*.log
+
+# server
+server/data
+server/uploads
+server/.env
+
+# editors
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
